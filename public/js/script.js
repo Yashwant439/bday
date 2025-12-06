@@ -88,7 +88,7 @@ function initNavigation() {
 
 /* === Enhanced Countdown === */
 function initCountdown() {
-    const birthday = new Date('December 6, 2025 22:09:00').getTime();
+    const birthday = new Date('December 19, 2025 00:00:00').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();

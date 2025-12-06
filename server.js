@@ -178,6 +178,9 @@ const photos = [
     { id: 6, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173091/n6_iefgsc.jpg', caption: 'LDKI BANNE KA SHOCK H!' },
     { id: 7, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764174209/n7_qyggaa.jpg', caption: 'PHONE!' },
     { id: 8, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173109/n8_pqzse2.jpg', caption: 'KHANA KO FEKHTE HUE!' },
+    { id: 9, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1765040826/WhatsApp_Image_2025-12-06_at_22.36.13_7a577b9d_zvz6ty.jpg', caption: 'MAI TOH KOREAN PAGLU HU!' },
+    { id: 10, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1765040818/WhatsApp_Image_2025-12-06_at_22.36.12_1d5eec7a_ar9dfu.jpg', caption: 'FILTER PAGLU!' },
+    { id: 11, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1765040809/WhatsApp_Image_2025-12-06_at_22.36.11_40acba58_hroi3j.jpg', caption: 'FINALLY REMOVED BRACES! ' },
 ];
 
 // Videos
