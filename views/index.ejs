@@ -3,201 +3,386 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Epic Birthday Surprise! 🎉</title>
-
+    <title>Nikhil's Birthday Extravaganza! 🎂</title>
+    
     <!-- Icons & fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
-
-    <!-- Swiper if you still need it -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
-    <!-- Your styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet"/>
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Particle.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
     <link rel="stylesheet" href="/styles/style.css"/>
+    <style>
+        :root {
+            --gold: #FFD700;
+            --rose: #FF6B8B;
+            --teal: #4ECDC4;
+            --purple: #9D4EDD;
+            --dark: #0A0A1A;
+        }
+        
+        /* Floating balloons */
+        .balloon {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            border-radius: 50%;
+            z-index: -2;
+            opacity: 0.8;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        
+        /* Glitch effect for hero text */
+        .glitch {
+            position: relative;
+            animation: glitch 5s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            1%, 3% { transform: translate(-2px, 2px); }
+            2%, 4% { transform: translate(2px, -1px); }
+            5% { transform: translate(0); }
+        }
+    </style>
 </head>
 <body>
-    <!-- Photo-based Background -->
-    <div class="bg-photo" style="background-image: url('https://asset.gecdesigns.com/img/wallpapers/happy-birthday-wishes-with-elegant-golden-birthday-cake-balloons-and-candles-sr09062507-cover.webp');" aria-hidden="true">
+    <!-- Animated Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Floating Balloons -->
+    <div class="balloon-container">
+        <div class="balloon" style="left:10%; background:linear-gradient(135deg, #FF6B8B, #FFD700); animation-delay:0s"></div>
+        <div class="balloon" style="left:30%; background:linear-gradient(135deg, #4ECDC4, #9D4EDD); animation-delay:2s"></div>
+        <div class="balloon" style="left:50%; background:linear-gradient(135deg, #FFD700, #FF6B8B); animation-delay:4s"></div>
+        <div class="balloon" style="left:70%; background:linear-gradient(135deg, #9D4EDD, #4ECDC4); animation-delay:6s"></div>
+        <div class="balloon" style="left:90%; background:linear-gradient(135deg, #4ECDC4, #FFD700); animation-delay:8s"></div>
     </div>
-
-    <!-- Animated floating ribbons / candle flicker -->
-    <div class="decorations">
-        <div class="ribbon ribbon-1"></div>
-        <div class="ribbon ribbon-2"></div>
-        <div class="candle-flicker"></div>
-    </div>
-
-    <!-- Floating Navigation -->
-    <nav class="floating-nav" aria-label="Main navigation">
-        <button class="nav-item active" data-target="hero" aria-label="hero">🎂</button>
-        <button class="nav-item" data-target="gallery" aria-label="gallery">📸</button>
-        <button class="nav-item" data-target="videos" aria-label="videos">🎥</button>
-        <button class="nav-item" data-target="wishes" aria-label="wishes">💝</button>
+    
+    <!-- Neon Navigation -->
+    <nav class="neon-nav">
+        <div class="nav-brand">Nikhil's 19th Dec 🎂</div>
+        <div class="nav-links">
+            <a href="#hero" class="nav-link active" data-aos="fade-down" data-aos-delay="100">
+                <i class="fas fa-home"></i> <span>Home</span>
+            </a>
+            <a href="#gallery" class="nav-link" data-aos="fade-down" data-aos-delay="200">
+                <i class="fas fa-images"></i> <span>Gallery</span>
+            </a>
+            <a href="#videos" class="nav-link" data-aos="fade-down" data-aos-delay="300">
+                <i class="fas fa-video"></i> <span>Videos</span>
+            </a>
+            <a href="#wishes" class="nav-link" data-aos="fade-down" data-aos-delay="400">
+                <i class="fas fa-heart"></i> <span>Wishes</span>
+            </a>
+            <a href="#countdown" class="nav-link" data-aos="fade-down" data-aos-delay="500">
+                <i class="fas fa-clock"></i> <span>Countdown</span>
+            </a>
+        </div>
     </nav>
-
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Hero Section -->
-        <section id="hero" class="section active" role="region" aria-labelledby="heroTitle">
-            <div class="hero-content">
-                <div class="badge-spin" aria-hidden="true">
-                    <i class="fas fa-birthday-cake"></i>
-                </div>
-
-                <h1 id="heroTitle" class="main-title">
-                    <span class="title-word">Happy</span>
-                    <span class="title-word">Birthday!</span>
-                    <span class="title-word">Nikhil Kandpal</span>
-                </h1>
-
-                <p class="hero-subtitle">A small surprise for his birthday… please write your best wishes here ❤️🎂</p>
-
-                <div class="cta-buttons">
-                    <button class="btn-primary" onclick="scrollToSection('gallery')">
-                        <i class="fas fa-images"></i> View Memories
-                    </button>
-                    <button class="btn-secondary" onclick="scrollToSection('wishes')">
-                        <i class="fas fa-heart"></i> Send Wish
-                    </button>
-                </div>
-                <img src="https://res.cloudinary.com/dvswzenja/image/upload/v1764173667/n9_ztt3qg.jpg" height="500px" class="hero-image" style="margin-top: 35px;">
-            </div>
-        </section>
-
-        <!-- Photo Gallery Section (now large + beautiful) -->
-        <section id="gallery" class="section" role="region" aria-labelledby="galleryTitle">
-            <div class="section-header">
-                <h2 id="galleryTitle">Memory Gallery</h2>
-                <p>Our favorite moments</p>
-            </div>
-
-            <!-- Big responsive masonry-ish gallery -->
-            <div class="photo-grid" id="photoGrid">
-                <% photos.forEach((photo) => { %>
-                    <figure class="photo-card">
-                        <img src="<%= photo.url %>" alt="<%= photo.caption || 'Memory photo' %>" loading="lazy" />
-                        <figcaption><%= photo.caption %></figcaption>
-                    </figure>
-                <% }); %>
-            </div>
-        </section>
-
-        <!-- Video Carousel Section -->
-<section id="videos" class="section" role="region" aria-labelledby="videosTitle">
-    <div class="section-header">
-        <h2 id="videosTitle">Video Memories</h2>
-    </div>
-
-    <div class="video-carousel-container">
-        <div class="video-carousel" id="videoCarousel">
-            <% videos.forEach(video => { %>
-                <div class="video-item">
-                    <div class="video-wrapper">
-                        <video 
-                            controls
-                            preload="metadata"
-                            playsinline
-                            crossorigin="anonymous"
-                            width="100%"
-                            height="auto"
-                        >
-                            <source src="<%= video.url %>" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
+    
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content" data-aos="zoom-in" data-aos-duration="1500">
+                <div class="birthday-badge">
+                    <div class="spinning-cake">
+                        <i class="fas fa-birthday-cake"></i>
                     </div>
                 </div>
-            <% }); %>
-        </div>
-    </div>
-</section>
-
-
-        <!-- Wishes Section -->
-        <section id="wishes" class="section" role="region" aria-labelledby="wishesTitle">
-            <div class="section-header">
-                <h2 id="wishesTitle">Birthday Wishes</h2>
-                <p>Leave a birthday wish</p>
+                
+                <h1 class="hero-title glitch">
+                    <span class="title-gradient">Happy Birthday</span>
+                    <span class="title-name">Nikhil!</span>
+                </h1>
+                
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                    Today is your day! Let's celebrate the amazing person you are 🎉
+                </p>
+                
+                <!-- Birthday Countdown -->
+                <div class="countdown-container" id="countdown" data-aos="fade-up" data-aos-delay="600">
+                    <h3>Countdown to Celebration</h3>
+                    <div class="countdown-timer">
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="days">00</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="hours">00</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="minutes">00</span>
+                            <span class="countdown-label">Minutes</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="seconds">00</span>
+                            <span class="countdown-label">Seconds</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-actions" data-aos="fade-up" data-aos-delay="800">
+                    <button class="btn-neon" onclick="scrollToSection('wishes')">
+                        <i class="fas fa-gift"></i> Send Your Wish
+                    </button>
+                    <button class="btn-outline" onclick="launchConfettiWithMusic()">
+                        <i class="fas fa-fireworks"></i> Play Music
+                    </button>
+                </div>
+                
+                <div class="birthday-image" data-aos="flip-up" data-aos-delay="1000">
+                    <img src="https://res.cloudinary.com/dvswzenja/image/upload/v1764173667/n9_ztt3qg.jpg" 
+                         alt="Nikhil Birthday" 
+                         class="hero-image">
+                    <div class="image-frame"></div>
+                </div>
             </div>
-
-            <div class="wish-form-container">
+        </div>
+    </section>
+    
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Memory Lane</h2>
+                <p class="section-subtitle">Cherished moments captured forever ✨</p>
+            </div>
+            
+            <!-- Interactive Photo Grid -->
+            <div class="interactive-grid" id="photoGrid">
+                <% photos.forEach((photo, index) => { %>
+                <div class="grid-item" data-aos="zoom-in" data-aos-delay="<%= index * 100 %>">
+                    <div class="photo-card">
+                        <img src="<%= photo.url %>" 
+                             alt="<%= photo.caption %>"
+                             class="photo-image"
+                             loading="lazy">
+                        <div class="photo-overlay">
+                            <div class="overlay-content">
+                                <h4><%= photo.caption %></h4>
+                                <button class="view-btn" onclick="openLightbox('<%= photo.url %>', '<%= photo.caption %>')">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="photo-shine"></div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Video Section -->
+    <section id="videos" class="video-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Video Memories</h2>
+                <p class="section-subtitle">Relive the fun moments 🎥</p><br><br><br><br>
+            </div>
+            
+            <div class="video-carousel" id="videoCarousel">
+                <% videos.forEach((video, index) => { %>
+                <div class="video-card" data-aos="fade-left" data-aos-delay="<%= index * 200 %>">
+                    <div class="video-wrapper">
+                        <video controls preload="metadata">
+                            <source src="<%= video.url %>" type="video/mp4">
+                        </video>
+                        <div class="video-caption">
+                            <i class="fas fa-play-circle"></i>
+                            <span><u><%= video.title %></u></span> <br><br><br><br>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Wishes Section -->
+    <section id="wishes" class="wishes-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Birthday Wishes</h2>
+                <p class="section-subtitle">Send your heartfelt messages 💝</p>
+            </div>
+            
+            <!-- Wish Form -->
+            <div class="wish-form-container" data-aos="fade-up">
                 <div class="wish-form-glass">
-                    <h3>Send Your Wish</h3>
-
+                    <div class="form-header">
+                        <h3><i class="fas fa-envelope-open-text"></i> Write Your Wish</h3>
+                        <div class="emoji-selector">
+                            <span onclick="addEmoji('🎂')">🎂</span>
+                            <span onclick="addEmoji('🎉')">🎉</span>
+                            <span onclick="addEmoji('🥳')">🥳</span>
+                            <span onclick="addEmoji('🎁')">🎁</span>
+                            <span onclick="addEmoji('❤️')">❤️</span>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
-                        <label for="nameInput"><i class="fas fa-user"></i> Your Name</label>
-
-                        <!-- Searchable input with datalist (works on mobile & desktop) -->
-                        <div class="name-input-wrap">
-                            <input id="nameInput" list="namesDatalist" placeholder="Start typing or pick your name…" autocomplete="off" />
+                        <div class="input-with-icon">
+                            <i class="fas fa-user-circle"></i>
+                            <input type="text" 
+                                   id="nameInput" 
+                                   list="namesDatalist"
+                                   placeholder="Enter your name..."
+                                   autocomplete="off"
+                                   class="name-input">
                             <datalist id="namesDatalist">
                                 <% validNames.forEach(name => { %>
-                                    <option value="<%= name %>"></option>
+                                <option value="<%= name %>"></option>
                                 <% }); %>
                             </datalist>
                         </div>
-                        <small class="hint">Can't find your name? Type it.</small>
                     </div>
-
+                    
                     <div class="form-group">
-                        <label for="wishMessage"><i class="fas fa-envelope"></i> Your Message</label>
-                        <textarea id="wishMessage" placeholder="Write a heartfelt birthday wish (include 'birthday' or 'happy' or an emoji 🎂 🎉)..."></textarea>
+                        <div class="textarea-with-counter">
+                            <textarea id="wishMessage" 
+                                      placeholder="Write your birthday message here... Include 'birthday' or emojis 🎂"
+                                      rows="4"></textarea>
+                            <div class="char-counter">0/500</div>
+                        </div>
                     </div>
-
-                    <button class="wish-submit-btn" onclick="addWish()">
-                        <i class="fas fa-paper-plane"></i> Send Wish
+                    
+                    <button class="btn-submit-wish" onclick="addWish()">
+                        <i class="fas fa-paper-plane"></i> Send Wish 
                     </button>
                 </div>
             </div>
-
+            
+            <!-- Wishes Display -->
             <div class="wishes-display">
                 <div class="wishes-grid" id="wishesGrid">
                     <% wishes.forEach(wish => { %>
-                        <div class="wish-card" data-wish-id="<%= wish.id %>">
-                            <div class="wish-card-inner">
-                                <div class="wish-header">
-                                    <div class="user-avatar" aria-hidden="true">
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                    <div class="wish-info">
-                                        <h4 class="wish-name"><%= wish.name %></h4>
-                                        <span class="wish-time"><%= wish.timestamp %></span>
-                                    </div>
+                    <div class="wish-bubble" data-aos="fade-up">
+                        <div class="bubble-content">
+                            <div class="bubble-header">
+                                <div class="avatar">
+                                    <%= wish.name.charAt(0).toUpperCase() %>
                                 </div>
-                                <p class="wish-text"><%= wish.message %></p>
-                                <div class="wish-actions">
-                                    <button class="wish-like" onclick="toggleLike(this)">
-                                        <i class="far fa-heart"></i>
-                                    </button>
+                                <div class="bubble-info">
+                                    <h4><%= wish.name %></h4>
+                                    <span class="time"><%= wish.timestamp %></span>
                                 </div>
                             </div>
+                            <div class="bubble-message">
+                                <%= wish.message %>
+                            </div>
+                            <div class="bubble-actions">
+                                <button class="like-btn" onclick="toggleLike(this)">
+                                    <i class="far fa-heart"></i>
+                                    <span class="like-count">0</span>
+                                </button>
+                                <button class="share-btn" onclick="shareWish('<%= wish.name %>', '<%= wish.message %>')">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
                         </div>
+                        <div class="bubble-tail"></div>
+                    </div>
                     <% }); %>
                 </div>
             </div>
-        </section>
-    </div>
-
-    <!-- Photo Lightbox Modal -->
-    <div id="lightbox" class="lightbox" role="dialog" aria-hidden="true">
-        <button class="lightbox-close" aria-label="Close" onclick="closeLightbox()">×</button>
-        <img id="lightboxImg" src="" alt="Enlarged photo"/>
-        <div id="lightboxCaption" class="lightbox-caption"></div>
-    </div>
-
-    <!-- Floating Music Player -->
-    <div class="music-player">
-        <button class="music-toggle" onclick="toggleMusic()" aria-label="Toggle music">
-            <i class="fas fa-music"></i>
+        </div>
+    </section>
+    
+    <!-- Enhanced Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
         </button>
-        <audio id="bgMusic" loop>
-            <source src="https://res.cloudinary.com/dvswzenja/video/upload/v1764156842/happy-birthday-to-you-piano-version-13976_unvinv.mp3" type="audio/mp3"/>
-        </audio>
+        <div class="lightbox-content">
+            <img id="lightboxImg" src="" alt="">
+            <div id="lightboxCaption" class="lightbox-caption"></div>
+        </div>
+        <button class="lightbox-nav prev" onclick="changeImage(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-nav next" onclick="changeImage(1)"><i class="fas fa-chevron-right"></i></button>
     </div>
-
+   
+    <!-- Music Player -->
+    <div class="music-player">
+        <audio id="bgMusic" loop>
+            <source src="https://res.cloudinary.com/dvswzenja/video/upload/v1764156842/happy-birthday-to-you-piano-version-13976_unvinv.mp3" type="audio/mp3">
+        </audio>
+        
+    </div> 
+    
     <!-- Confetti Canvas -->
-    <canvas id="confetti"></canvas>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <canvas id="confetti-canvas"></canvas>
+    
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="/js/script.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+        
+        // Initialize particles
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80 },
+                color: { value: ["#FFD700", "#FF6B8B", "#4ECDC4", "#9D4EDD"] },
+                shape: { type: "circle" },
+                opacity: { value: 0.5 },
+                size: { value: 3 },
+                move: { speed: 1 }
+            }
+        });
+        
+        // Countdown timer
+        function updateCountdown() {
+            const birthday = new Date('December 19, 2025 00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = birthday - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        // Emoji selector
+        function addEmoji(emoji) {
+            const textarea = document.getElementById('wishMessage');
+            textarea.value += emoji;
+            updateCharCount();
+        }
+        
+        // Character counter
+        function updateCharCount() {
+            const textarea = document.getElementById('wishMessage');
+            const counter = document.querySelector('.char-counter');
+            counter.textContent = `${textarea.value.length}/500`;
+        }
+        
+        document.getElementById('wishMessage').addEventListener('input', updateCharCount);
+    </script>
 </body>
 </html>

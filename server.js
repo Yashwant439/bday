@@ -170,14 +170,14 @@ let wishes = JSON.parse(fs.readFileSync('./data/wishes.json', 'utf8')).wishes;
 
 // Photos
 const photos = [
-    { id: 1, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171043/n1_qwasqq.jpg', caption: 'Memory!' },
-    { id: 2, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171472/n2_uebltw.jpg', caption: 'Memory!' },
-    { id: 3, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171483/n3_mwe8il.jpg', caption: 'Memory!' },
-    { id: 4, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171497/n4_xmeje0.jpg', caption: 'Memory!' },
-    { id: 5, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764174193/n5_jadrqo.jpg', caption: 'Memory!' },
-    { id: 6, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173091/n6_iefgsc.jpg', caption: 'Memory!' },
-    { id: 7, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764174209/n7_qyggaa.jpg', caption: 'Memory!' },
-    { id: 8, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173109/n8_pqzse2.jpg', caption: 'Memory!' },
+    { id: 1, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171043/n1_qwasqq.jpg', caption: 'MEMORY!' },
+    { id: 2, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171472/n2_uebltw.jpg', caption: 'DBMS!' },
+    { id: 3, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171483/n3_mwe8il.jpg', caption: 'METRO!' },
+    { id: 4, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764171497/n4_xmeje0.jpg', caption: 'EOD!' },
+    { id: 5, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764174193/n5_jadrqo.jpg', caption: 'MAKEUP!' },
+    { id: 6, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173091/n6_iefgsc.jpg', caption: 'LDKI BANNE KA SHOCK H!' },
+    { id: 7, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764174209/n7_qyggaa.jpg', caption: 'PHONE!' },
+    { id: 8, url: 'https://res.cloudinary.com/dvswzenja/image/upload/v1764173109/n8_pqzse2.jpg', caption: 'KHANA KO FEKHTE HUE!' },
 ];
 
 // Videos
@@ -185,22 +185,22 @@ const videos = [
     {
         id: 1,
         url: 'https://res.cloudinary.com/dvswzenja/video/upload/v1764168908/meow_meow_abnffn.mp4',
-        title: 'Video 1'
+        title: 'MEOW MEOW'
     },
     {
         id: 2,
         url: 'https://res.cloudinary.com/dvswzenja/video/upload/v1764170903/nikhil_gqrric.mp4',
-        title: 'Video 2'
+        title: 'INTENSE FF MATCH'
     },
     {
         id: 3,
         url: 'https://res.cloudinary.com/dvswzenja/video/upload/v1764172543/headphn_uzluuw.mp4',
-        title: 'Video 2'
+        title: 'FANCY EAR MUFF'
     },
     {
         id: 4,
         url: 'https://res.cloudinary.com/dvswzenja/video/upload/v1764173079/pant_dtuoqr.mp4',
-        title: 'Video 2'
+        title: 'I WANT TO FLY '
     },
 ];
 
