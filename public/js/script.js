@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initConfetti();
     initSmoothScrolling();
     initParallaxEffects();
+    restoreLikes();
     
     // Auto-start animations
     startBalloonAnimation();
@@ -548,6 +549,7 @@ function addWishToDOM(wish) {
     const wishBubble = document.createElement('div');
     wishBubble.className = 'wish-bubble';
     wishBubble.setAttribute('data-aos', 'fade-up');
+    wishBubble.setAttribute('data-wish-id', wish.id);
     wishBubble.innerHTML = `
         <div class="bubble-content">
             <div class="bubble-header">
@@ -622,29 +624,96 @@ function showNotification(message, type = 'info') {
 function toggleLike(btn) {
     const icon = btn.querySelector('i');
     const count = btn.querySelector('.like-count');
+    const wishBubble = btn.closest('.wish-bubble');
+    const wishId = wishBubble.getAttribute('data-wish-id');
+    
+    // Get all like data from localStorage
+    let likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
+    let likedWishes = JSON.parse(localStorage.getItem('likedWishes') || '[]');
+    
+    // Initialize count for this wish if not exists
+    if (!likeCounts[wishId]) {
+        likeCounts[wishId] = 0;
+    }
     
     if (icon.classList.contains('fas')) {
         // Unlike
         icon.classList.remove('fas');
         icon.classList.add('far');
-        count.textContent = parseInt(count.textContent) - 1;
-        btn.style.transform = 'scale(1)';
+        icon.style.color = '';
+        likeCounts[wishId]--;
+        count.textContent = likeCounts[wishId];
+        
+        // Remove from liked list
+        likedWishes = likedWishes.filter(id => id !== wishId);
     } else {
         // Like with animation
         icon.classList.remove('far');
         icon.classList.add('fas');
         icon.style.color = '#FF6B8B';
-        count.textContent = parseInt(count.textContent) + 1;
+        likeCounts[wishId]++;
+        count.textContent = likeCounts[wishId];
         
-        // Animation
+        // Scale animation
         btn.style.transform = 'scale(1.3)';
         setTimeout(() => {
             btn.style.transform = 'scale(1)';
         }, 300);
         
+        // Pulse animation on count
+        animateCountChange(count);
+        
         // Heart particles
         createHeartParticles(btn);
+        
+        // Add to liked list
+        if (!likedWishes.includes(wishId)) {
+            likedWishes.push(wishId);
+        }
     }
+    
+    // Save both like counts and liked wishes to localStorage
+    localStorage.setItem('likeCounts', JSON.stringify(likeCounts));
+    localStorage.setItem('likedWishes', JSON.stringify(likedWishes));
+}
+
+/* === Restore Likes from LocalStorage === */
+function restoreLikes() {
+    const likedWishes = JSON.parse(localStorage.getItem('likedWishes') || '[]');
+    const likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
+    
+    // Restore like counts for all wishes
+    document.querySelectorAll('[data-wish-id]').forEach(wishBubble => {
+        const wishId = wishBubble.getAttribute('data-wish-id');
+        const likeBtn = wishBubble.querySelector('.like-btn');
+        const icon = likeBtn.querySelector('i');
+        const count = likeBtn.querySelector('.like-count');
+        
+        // Set count
+        const currentCount = likeCounts[wishId] || 0;
+        count.textContent = currentCount;
+        
+        // Set liked state if in likedWishes array
+        if (likedWishes.includes(wishId)) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            icon.style.color = '#FF6B8B';
+        }
+    });
+}
+
+/* === Animate Count Change === */
+function animateCountChange(countElement) {
+    countElement.style.transition = 'all 0.3s ease';
+    countElement.style.transform = 'scale(1.5)';
+    countElement.style.color = '#FF6B8B';
+    countElement.style.fontWeight = 'bold';
+    
+    setTimeout(() => {
+        countElement.style.transform = 'scale(1)';
+        countElement.style.color = '';
+        countElement.style.fontWeight = 'normal';
+    }, 300);
 }
 
 function createHeartParticles(element) {

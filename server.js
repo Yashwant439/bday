@@ -227,7 +227,15 @@ app.post('/add-wish', (req, res) => {
         id: Date.now(),
         name,
         message,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        })
     };
 
     wishes.unshift(newWish);
