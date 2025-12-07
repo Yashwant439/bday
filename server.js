@@ -149,10 +149,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+// Import database connection and models
+const connectDB = require('./config/database');
+const Name = require('./models/Name');
+const Wish = require('./models/Wish');
+
+// Connect to MongoDB
+connectDB();
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -160,13 +168,6 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-// Load names
-const namesData = JSON.parse(fs.readFileSync('./data/names.json', 'utf8'));
-const validNames = new Set(namesData.names.map(n => n.toLowerCase()));
-
-// Load wishes
-let wishes = JSON.parse(fs.readFileSync('./data/wishes.json', 'utf8')).wishes;
 
 // Photos
 const photos = [
@@ -207,41 +208,65 @@ const videos = [
     },
 ];
 
-app.get('/', (req, res) => {
-    res.render('index', {
-        wishes,
-        validNames: namesData.names,
-        photos,
-        videos
-    });
+app.get('/', async (req, res) => {
+    try {
+        // Fetch wishes from MongoDB
+        const wishes = await Wish.find().sort({ createdAt: -1 });
+        
+        // Fetch names from MongoDB and get display names
+        const nameObjects = await Name.find();
+        const validNames = nameObjects.map(n => n.displayName);
+        
+        res.render('index', {
+            wishes,
+            validNames,
+            photos,
+            videos
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.render('index', {
+            wishes: [],
+            validNames: [],
+            photos,
+            videos
+        });
+    }
 });
 
-app.post('/add-wish', (req, res) => {
-    const { name, message } = req.body;
+app.post('/add-wish', async (req, res) => {
+    try {
+        const { name, message } = req.body;
 
-    if (!validNames.has(name.toLowerCase())) {
-        return res.json({ success: false, error: 'Name not in guest list!' });
+        // Check if name exists in database
+        const nameExists = await Name.findOne({ name: name.toLowerCase() });
+        
+        if (!nameExists) {
+            return res.json({ success: false, error: 'Name not in guest list!' });
+        }
+
+        const newWish = new Wish({
+            id: Date.now(),
+            name: nameExists.displayName,
+            message,
+            timestamp: new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            })
+        });
+
+        await newWish.save();
+
+        res.json({ success: true, wish: newWish });
+    } catch (error) {
+        console.error('Error adding wish:', error);
+        res.json({ success: false, error: 'Failed to add wish' });
     }
-
-    const newWish = {
-        id: Date.now(),
-        name,
-        message,
-        timestamp: new Date().toLocaleString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
-        })
-    };
-
-    wishes.unshift(newWish);
-    fs.writeFileSync('./data/wishes.json', JSON.stringify({ wishes }, null, 2));
-
-    res.json({ success: true, wish: newWish });
 });
 
 app.listen(PORT, () =>
