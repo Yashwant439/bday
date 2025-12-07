@@ -17,12 +17,44 @@ document.addEventListener('DOMContentLoaded', function() {
     initSmoothScrolling();
     initParallaxEffects();
     restoreLikes();
+    // Format timestamps on page (convert ISO/other formats to user's local time)
+    if (typeof formatWishTimes === 'function') formatWishTimes();
     
     // Auto-start animations
     startBalloonAnimation();
     startCakeAnimation();
     
     console.log('🎉 Premium Birthday Website Loaded!');
+
+    // Prevent same-person duplicate attempts: when user types name, check localStorage
+    const nameInput = document.getElementById('nameInput');
+    const submitBtn = document.querySelector('.btn-submit-wish');
+
+    if (nameInput && submitBtn) {
+        // store original text for restoration
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+
+        nameInput.addEventListener('input', () => {
+            const val = nameInput.value.trim().toLowerCase();
+            const key = 'wished_' + val;
+            if (val && localStorage.getItem(key)) {
+                if (nameInput.dataset.notified !== '1') {
+                    showNotification('You have already sent a wish for this name.', 'info');
+                    nameInput.dataset.notified = '1';
+                }
+                // Do NOT disable the submit button — only notify the user.
+            } else {
+                nameInput.dataset.notified = '0';
+            }
+        });
+
+        // Also run once on load if there's already a name prefilled
+        const preKey = nameInput.value && localStorage.getItem('wished_' + nameInput.value.trim().toLowerCase());
+        if (preKey) {
+            showNotification('You have already sent a wish for this name.', 'info');
+            nameInput.dataset.notified = '1';
+        }
+    }
 });
 
 /* === Initialize Particles.js Background === */
@@ -529,16 +561,37 @@ async function addWish() {
                     });
                 }
             }, 500);
+            // Mark this name as submitted in localStorage (UX only)
+            try {
+                const key = 'wished_' + name.toLowerCase();
+                localStorage.setItem(key, '1');
+                // Do not disable the submit button — server enforces duplicates.
+            } catch (e) {
+                // ignore storage errors
+            }
+            // Ensure the newly-added wish timestamp is formatted
+            if (typeof formatWishTimes === 'function') formatWishTimes();
         } else {
-            showNotification(result.error || 'Failed to send wish', 'error');
+            // If server tells us the user already sent a wish, set localStorage (UX only)
+            const errMsg = result.error || 'Failed to send wish';
+            showNotification(errMsg, 'error');
+            if (errMsg.toLowerCase().includes('already')) {
+                try {
+                    const key = 'wished_' + name.toLowerCase();
+                    localStorage.setItem(key, '1');
+                    // Don't disable the submit button here; only notify the user.
+                } catch (e) {}
+            }
         }
     } catch (err) {
         console.error(err);
         showNotification('Network error. Please try again.', 'error');
     } finally {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        // Always reset the button to its original state after the request finishes
+        try {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        } catch (e) {}
     }
 }
 
@@ -558,7 +611,7 @@ function addWishToDOM(wish) {
                 </div>
                 <div class="bubble-info">
                     <h4>${escapeHtml(wish.name)}</h4>
-                    <span class="time">${escapeHtml(wish.timestamp)}</span>
+                    <span class="time" data-ts="${escapeHtml(wish.timestamp)}"></span>
                 </div>
             </div>
             <div class="bubble-message">
@@ -567,7 +620,7 @@ function addWishToDOM(wish) {
             <div class="bubble-actions">
                 <button class="like-btn" onclick="toggleLike(this)">
                     <i class="far fa-heart"></i>
-                    <span class="like-count">0</span>
+                    <span class="like-count">${Number(wish.likes || 0)}</span>
                 </button>
                 <button class="share-btn" onclick="shareWish('${escapeHtml(wish.name)}', '${escapeHtml(wish.message)}')">
                     <i class="fas fa-share"></i>
@@ -589,6 +642,8 @@ function addWishToDOM(wish) {
         wishBubble.style.opacity = '1';
         wishBubble.style.transform = 'translateY(0)';
     }, 10);
+    // Format timestamp for the inserted wish
+    if (typeof formatWishTimes === 'function') formatWishTimes();
 }
 
 /* === Helper Functions === */
@@ -621,60 +676,85 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-function toggleLike(btn) {
+async function toggleLike(btn) {
     const icon = btn.querySelector('i');
-    const count = btn.querySelector('.like-count');
+    const countEl = btn.querySelector('.like-count');
     const wishBubble = btn.closest('.wish-bubble');
     const wishId = wishBubble.getAttribute('data-wish-id');
-    
-    // Get all like data from localStorage
-    let likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
-    let likedWishes = JSON.parse(localStorage.getItem('likedWishes') || '[]');
-    
-    // Initialize count for this wish if not exists
-    if (!likeCounts[wishId]) {
-        likeCounts[wishId] = 0;
-    }
-    
-    if (icon.classList.contains('fas')) {
-        // Unlike
+
+    // parse current count
+    const prevCount = parseInt(countEl.textContent || '0', 10) || 0;
+    const isCurrentlyLiked = icon.classList.contains('fas');
+    const delta = isCurrentlyLiked ? -1 : 1;
+
+    // Optimistic UI update
+    if (isCurrentlyLiked) {
         icon.classList.remove('fas');
         icon.classList.add('far');
         icon.style.color = '';
-        likeCounts[wishId]--;
-        count.textContent = likeCounts[wishId];
-        
-        // Remove from liked list
-        likedWishes = likedWishes.filter(id => id !== wishId);
+        countEl.textContent = Math.max(0, prevCount - 1);
     } else {
-        // Like with animation
         icon.classList.remove('far');
         icon.classList.add('fas');
         icon.style.color = '#FF6B8B';
-        likeCounts[wishId]++;
-        count.textContent = likeCounts[wishId];
-        
-        // Scale animation
-        btn.style.transform = 'scale(1.3)';
-        setTimeout(() => {
-            btn.style.transform = 'scale(1)';
-        }, 300);
-        
-        // Pulse animation on count
-        animateCountChange(count);
-        
-        // Heart particles
+        countEl.textContent = prevCount + 1;
+        // small scale animation
+        btn.style.transform = 'scale(1.15)';
+        setTimeout(() => btn.style.transform = '', 200);
+        animateCountChange(countEl);
         createHeartParticles(btn);
-        
-        // Add to liked list
-        if (!likedWishes.includes(wishId)) {
-            likedWishes.push(wishId);
+    }
+
+    // Send update to server
+    try {
+        const res = await fetch('/wish-like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: Number(wishId), delta })
+        });
+
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+            throw new Error(json && json.error ? json.error : 'Failed to update like');
+        }
+
+        // Update localStorage caches (likedWishes and likeCounts)
+        try {
+            const likeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
+            const likedWishes = JSON.parse(localStorage.getItem('likedWishes') || '[]');
+            likeCounts[wishId] = json.likes;
+            if (delta === 1) {
+                if (!likedWishes.includes(wishId)) likedWishes.push(wishId);
+            } else {
+                const idx = likedWishes.indexOf(wishId);
+                if (idx !== -1) likedWishes.splice(idx, 1);
+            }
+            localStorage.setItem('likeCounts', JSON.stringify(likeCounts));
+            localStorage.setItem('likedWishes', JSON.stringify(likedWishes));
+            // ensure displayed count matches server
+            countEl.textContent = json.likes;
+        } catch (e) {
+            // ignore localStorage errors
+            countEl.textContent = json.likes;
+        }
+    } catch (err) {
+        // Revert optimistic UI on error
+        console.error('Like update failed', err);
+        showNotification('Failed to update like. Please try again.', 'error');
+        if (isCurrentlyLiked) {
+            // was liked, revert to liked state
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            icon.style.color = '#FF6B8B';
+            countEl.textContent = prevCount;
+        } else {
+            // was not liked, revert to not-liked state
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            icon.style.color = '';
+            countEl.textContent = prevCount;
         }
     }
-    
-    // Save both like counts and liked wishes to localStorage
-    localStorage.setItem('likeCounts', JSON.stringify(likeCounts));
-    localStorage.setItem('likedWishes', JSON.stringify(likedWishes));
 }
 
 /* === Restore Likes from LocalStorage === */
@@ -902,4 +982,23 @@ function launchConfettiWithMusic() {
     
     // Show notification
     showNotification('🎵 Enjoy the music!', 'success');
+}
+
+/* === Format wish timestamps to local timezone === */
+function formatWishTimes() {
+    document.querySelectorAll('.time').forEach(el => {
+        const ts = el.getAttribute('data-ts');
+        if (!ts) return;
+        try {
+            const d = new Date(ts);
+            if (!isNaN(d.getTime())) {
+                el.textContent = d.toLocaleString();
+            } else {
+                // fallback: show original string
+                el.textContent = ts;
+            }
+        } catch (e) {
+            el.textContent = ts;
+        }
+    });
 }

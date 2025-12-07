@@ -245,19 +245,25 @@ app.post('/add-wish', async (req, res) => {
             return res.json({ success: false, error: 'Name not in guest list!' });
         }
 
+        // Prevent duplicate wishes from the same person (case-insensitive)
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        const existingWish = await Wish.findOne({
+            name: new RegExp('^' + escapeRegExp(nameExists.displayName) + '$', 'i')
+        });
+
+        if (existingWish) {
+            return res.json({ success: false, error: 'You have already sent a wish.' });
+        }
+
+        // Store timestamps in ISO (UTC) so clients can render in local timezone
         const newWish = new Wish({
             id: Date.now(),
             name: nameExists.displayName,
             message,
-            timestamp: new Date().toLocaleString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            })
+            timestamp: new Date().toISOString()
         });
 
         await newWish.save();
@@ -266,6 +272,33 @@ app.post('/add-wish', async (req, res) => {
     } catch (error) {
         console.error('Error adding wish:', error);
         res.json({ success: false, error: 'Failed to add wish' });
+    }
+});
+
+// Endpoint to increment/decrement likes for a wish
+app.post('/wish-like', async (req, res) => {
+    try {
+        const { id, delta } = req.body;
+        const parsedId = typeof id === 'number' ? id : parseInt(id, 10);
+        const inc = parseInt(delta, 10);
+        if (Number.isNaN(parsedId) || ![1, -1].includes(inc)) {
+            return res.status(400).json({ success: false, error: 'Invalid parameters' });
+        }
+
+        const updated = await Wish.findOneAndUpdate(
+            { id: parsedId },
+            { $inc: { likes: inc } },
+            { new: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ success: false, error: 'Wish not found' });
+        }
+
+        return res.json({ success: true, likes: updated.likes });
+    } catch (err) {
+        console.error('Error updating like:', err);
+        return res.status(500).json({ success: false, error: 'Failed to update like' });
     }
 });
 

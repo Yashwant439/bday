@@ -278,7 +278,7 @@
                                 </div>
                                 <div class="bubble-info">
                                     <h4><%= wish.name %></h4>
-                                    <span class="time"><%= wish.timestamp %></span>
+                                    <span class="time" data-ts="<%= wish.timestamp %>"></span>
                                 </div>
                             </div>
                             <div class="bubble-message">
@@ -287,7 +287,7 @@
                             <div class="bubble-actions">
                                 <button class="like-btn" onclick="toggleLike(this)">
                                     <i class="far fa-heart"></i>
-                                    <span class="like-count">0</span>
+                                    <span class="like-count"><%= (wish.likes || 0) %></span>
                                 </button>
                                 <button class="share-btn" onclick="shareWish('<%= wish.name %>', '<%= wish.message %>')">
                                     <i class="fas fa-share"></i>
